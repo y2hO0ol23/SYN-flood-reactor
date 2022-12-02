@@ -15,3 +15,5 @@ if __name__ == '__main__':
     except:
         for logger in loggers:
             logger.stop()
+        
+        protect.core.stop()

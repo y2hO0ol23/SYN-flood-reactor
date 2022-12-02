@@ -16,3 +16,6 @@ def start()->None:
     if next_time == int(time) - imports.delay:
         next_time += 1
         protect.syn.run(time)
+    
+def stop()->None:
+    protect.syn.stop()
