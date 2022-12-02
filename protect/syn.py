@@ -10,7 +10,19 @@ def drop_syn_init(packet:Packet)->None:
 def drop_syn(packet:Packet)->None:
     pass
 
-global end
+def slave(ip_list:set, time:float):
+    global check
+
+    for ip in set(ip_list):
+        if ip not in check:
+            print(imports.syn_drop_filter%(imports.ip,ip))
+            init = threading.Thread(target = sniff, kwargs={"prn" : drop_syn_init, "count" : 1, "filter" : imports.syn_drop_filter%(imports.ip,ip)}, daemon=True)
+            init.run()
+            check[ip] = int(time)
+    
+    while True: pass
+
+global end, check
 def master(time:float)->None:
     global end
 
@@ -21,20 +33,15 @@ def master(time:float)->None:
     list1 = utils.read(list1)
     list2 = utils.read(list2)
 
-    check = dict()
-
-    for ip in list1 + list2:
-        if ip not in check:
-            print(imports.syn_drop_filter%(imports.ip,ip))
-            slave = threading.Thread(target = sniff, kwargs={"prn" : drop_syn_init, "count" : 1, "filter" : imports.syn_drop_filter%(imports.ip,ip)}, daemon=True)
-            slave.run()
-            check[ip] = time
+    slaveT = threading.Thread(target = slave, args = (set(list1 + list2), ), daemon=True)
+    slaveT.run()
     
     while not end: pass
 
 def run(time:float)->tuple:
-    global end
+    global end, check
     end = False
+    check = dict()
     masterT = threading.Thread(target=master, args=(time, ))
     masterT.run()
 
