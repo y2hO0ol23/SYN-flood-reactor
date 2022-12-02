@@ -21,6 +21,7 @@ class logger():
 
     def manage(self, packet:scapy.packet)->None:
         filename = './log/' + tm.strftime('%Y-%m-%d_%I.%M.%S_%p.log', tm.localtime(tm.time()))
+        print(filename)
         thread = threading.Thread(target = self.log, args=(filename, packet))
         thread.start()
         
