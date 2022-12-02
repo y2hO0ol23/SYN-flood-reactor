@@ -8,9 +8,6 @@ if __name__ == '__main__':
     for logger in loggers:
         logger.run()
 
-    protect.core.init()
-    while True:
-        protect.core.start()
     try:
         while True:
             protect.core.start()
