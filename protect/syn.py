@@ -10,6 +10,7 @@ def drop_syn_init(packet:Packet)->None:
 def drop_syn(packet:Packet)->None:
     pass
 
+global end
 def master(time:float)->None:
     global end
 
@@ -31,7 +32,6 @@ def master(time:float)->None:
     
     while not end: pass
 
-global end
 def run(time:float)->tuple:
     global end
     end = False
