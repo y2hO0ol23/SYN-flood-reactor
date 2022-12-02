@@ -23,6 +23,7 @@ def run(time:float)->None:
 
     for ip in list1 + list2:
         if ip not in check:
+            print(imports.syn_drop_filter%(imports.ip,ip))
             init = threading.Thread(target = sniff, kwargs={"prn" : drop_syn_init, "count" : 1, "filter" : imports.syn_drop_filter%(imports.ip,ip)}, daemon=True)
             init.run()
             check[ip] = time
