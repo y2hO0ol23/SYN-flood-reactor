@@ -22,7 +22,6 @@ def master(time:float)->None:
 
     check = dict()
 
-    slaves = []
     for ip in list1 + list2:
         if ip not in check:
             print(imports.syn_drop_filter%(imports.ip,ip))
@@ -36,8 +35,8 @@ global end
 def run(time:float)->tuple:
     global end
     end = False
-    master = threading.Thread(target = master, args = (time))
-    master.run()
+    masterT = threading.Thread(target=master, args=(time))
+    masterT.run()
 
 def stop():
     global end
