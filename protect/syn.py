@@ -35,7 +35,7 @@ def master(time:float)->None:
 def run(time:float)->tuple:
     global end
     end = False
-    masterT = threading.Thread(target=master, args=(time))
+    masterT = threading.Thread(target=master, args=(time, ))
     masterT.run()
 
 def stop():
