@@ -5,7 +5,7 @@ import os
 
 def init():
     os.system('iptables -N defence_syn_flood')
-    os.system('iptables -A defence_syn_flood -d ' + imports.ip + ' --protocol tcp --tcp-flags SYN,ACK,FIN,RST SYN -j DROP')
+    os.system('iptables -A defence_syn_flood -d ' + imports.ip + ' --protocol tcp --tcp-flags --syn -j DROP')
 
 def end():
     os.system('iptables -F defence_syn_flood')
