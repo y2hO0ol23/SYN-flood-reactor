@@ -7,15 +7,14 @@ import threading
 
 from scapy.layers.inet import IP, TCP
 
-global check
+global check, queue
 
 def slave(data: tuple, time:float):
-    global check
+    global check, queue
     ip, seq, sport, dport = data
     key = "%s %d"%(ip, sport)
 
     if key in check: return
-    print(ip, seq, sport, dport)
 
     syn_ack = IP(src=imports.ip, dst=ip)/TCP(sport=dport, dport=sport, flags='SA', ack=seq+1)
     for _ in range(3):
@@ -24,21 +23,14 @@ def slave(data: tuple, time:float):
     syn = IP(src=ip, dst=imports.ip)/TCP(sport=sport, dport=dport, flags='S', seq=seq)
     pkt = sr1(syn, timeout=imports.timeout, verbose=False)
     if pkt != None:
-        cmd = "defence_syn_flood 1 -s %s --sport %s -d %d --dport %s --protocol tcp --tcp-flags SYN,ACK,FIN,RST SYN -j ACCEPT"%(ip, sport, imports.ip, dport)
-        os.system("iptables -I "+cmd)
-        send(syn)
-        os.system("iptables -I "+cmd)
-
-        print(ip,'=> accept')
+        queue.append((ip, sport, dport, syn))
     
     check[key] = False
 
 
 global end
 def master(time:float)->None:
-    global end, check
-    end = False
-    check = dict()
+    global end
 
     directory = './log/' + imports.syn_dir + '/'
     list1 = directory + tm.strftime('%Y-%m-%d_%I.%M.%S_%p.log', tm.localtime(time - 2 - imports.delay))
@@ -53,9 +45,33 @@ def master(time:float)->None:
     
     while not end: pass
 
+def queue_handler():
+    global end, queue
+
+    while not end:
+        if len(queue) > 0:
+            ip, sport, dport, syn = queue
+            cmd = "defence_syn_flood 1 -s %s --sport %s -d %d --dport %s --protocol tcp --tcp-flags SYN,ACK,FIN,RST SYN -j ACCEPT"%(ip, sport, imports.ip, dport)
+            os.system("iptables -I "+cmd)
+            sr1(syn, verbose=False)
+            os.system("iptables -D "+cmd)
+
+        queue = queue[1:]
+
+
 def run(time:float)->threading.Thread:
-    masterT = threading.Thread(target=master, args=(time, ))
-    masterT.start()
+    global end, check, queue
+
+    end = False
+    check = dict()
+    queue = []
+
+    threads = (
+        threading.Thread(target=master, args=(time, )),
+        threading.Thread(target=queue_handler)
+    )
+    for thread in threads:
+        thread.start()
 
 def stop():
     global end

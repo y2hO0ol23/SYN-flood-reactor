@@ -16,16 +16,6 @@ def start()->None:
     if next_time == int(time) - imports.delay:
         next_time += 1
         protect.syn.run(time)
-
-        while len(protect.syn.queue) > 0:
-            ip, cmd, rmtime = protect.syn.queue[0]
-            if rmtime <= time:
-                os.system('echo "%s" | at now +30 minutes'%cmd)
-                print(ip,'=> drop')
-                del protect.syn.check[protect.syn.ip]
-                protect.syn.queue = protect.syn.queue[1:]
-            else:
-                break
         
     
 def stop()->None:
