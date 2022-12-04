@@ -16,6 +16,7 @@ def slave(data: tuple, time:float):
 
     if key in check: return
 
+    print(ip)
     syn_ack = IP(src=imports.ip, dst=ip)/TCP(sport=dport, dport=sport, flags='SA', ack=seq+1)
     pkt = sr1(syn_ack, timeout=imports.timeout, verbose=False)
     
