@@ -19,9 +19,9 @@ def handler(packet: Packet):
     key = "%s:%d seq=%d"%(ip, sport, seq)
     
     if key not in check: check[key] = 0
-    if not check[key]:
+    if check[key] == 0:
         check[key] = 1
-        
+
         threading.Thread(target=timeout, args=(key, )).start()
         while check[key] < 2: pass
         
@@ -35,7 +35,7 @@ def handler(packet: Packet):
             os.system("iptables -D INPUT %s"%cmd)
 
         check[key] = 0
-    else:
+    elif check[key] == 1:
         check[key] = 2
 
 
