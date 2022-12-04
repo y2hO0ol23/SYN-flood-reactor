@@ -17,12 +17,13 @@ def start()->None:
         next_time += 1
         protect.syn.run(time)
 
-        while len(imports.queue) > 0:
-            ip, cmd, rmtime = imports.queue[0]
+        while len(protect.syn.queue) > 0:
+            ip, cmd, rmtime = protect.syn.queue[0]
             if rmtime <= time:
                 os.system('echo "%s" | at now +30 minutes'%cmd)
                 print(ip,'=> drop')
-                imports.queue = imports.queue[1:]
+                del protect.syn.check[protect.syn.ip]
+                protect.syn.queue = protect.syn.queue[1:]
             else:
                 break
     
