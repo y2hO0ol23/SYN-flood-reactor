@@ -7,7 +7,7 @@ import threading
 
 from scapy.layers.inet import IP, TCP
 
-global check, queue
+global end, check, queue
 
 def slave(data: tuple, time:float):
     global check, queue
@@ -28,7 +28,6 @@ def slave(data: tuple, time:float):
     check[key] = False
 
 
-global end
 def master(time:float)->None:
     global end
 
@@ -48,6 +47,7 @@ def master(time:float)->None:
     
     while not end: pass
 
+
 def queue_handler():
     global end, queue
 
@@ -56,7 +56,6 @@ def queue_handler():
         os.system("iptables -I "+cmd)
         sr1(syn, verbose=False)
         os.system("iptables -D "+cmd)
-
 
     while not end:
         if len(queue) > 0:

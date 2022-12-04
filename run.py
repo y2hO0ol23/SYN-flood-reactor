@@ -25,8 +25,6 @@ if __name__ == '__main__':
         while True:
             protect.core.start()
     except Exception as e:
-        print(e)
-
         for logger in loggers:
             logger.stop()
         
