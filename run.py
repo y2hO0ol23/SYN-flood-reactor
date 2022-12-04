@@ -18,7 +18,7 @@ def main():
     atexit.register(protect.syn.stop)
 
     threads = [
-        threading.Thread(target=sniff, kwargs={"prn" : protect.syn.handler, "count" : 0, "filter" : protect.syn.filter}, daemon=True)
+        threading.Thread(target=sniff, kwargs={"prn" : protect.syn.call, "count" : 0, "filter" : protect.syn.filter}, daemon=True)
     ]
 
     for thread in threads:

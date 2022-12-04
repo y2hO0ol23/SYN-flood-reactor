@@ -18,7 +18,8 @@ class timeout_chk():
     def __init__(self):
         self.end = False
 
-def handler(packet: Packet):
+handler = lambda pkt: threading.Thread(target=run, args=(pkt, ))
+def run(packet: Packet):
     global check
 
     ip, seq, sport, dport = packet[IP].src, packet[TCP].seq, packet[TCP].sport, packet[TCP].dport
