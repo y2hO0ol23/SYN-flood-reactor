@@ -33,7 +33,7 @@ def run(ip:str, seq:int, sport:int, dport:int):
         
         chk = timeout_chk()
         threading.Thread(target=timeout, args=(key, chk)).start()
-        while check[key] != 2: pass
+        while check[key] < 2: pass
         chk.end = True
 
         if check[key] == 2:
@@ -46,6 +46,8 @@ def run(ip:str, seq:int, sport:int, dport:int):
             os.system("iptables -D INPUT %s"%cmd)
 
         check[key] = 0
+    else:
+        check[key] = 2
 
 
 def init()->None:
