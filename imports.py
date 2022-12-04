@@ -5,6 +5,7 @@ from scapy.layers.inet import IP, TCP
 ip = get_if_addr(conf.iface)
 
 delay = 5
+timeout = 3
 
 def syn(filename:str, packet:Packet)->None:
     while True:
