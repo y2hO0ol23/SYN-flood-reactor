@@ -9,6 +9,7 @@ def setup():
     #iptables -I defence_syn_flood 1 -s <myip> --dport <forward> --protocol tcp --tcp-flags SYN,ACK,FIN,RST SYN -j DROP
 
 if __name__ == '__main__':  
+    setup()
     loggers = []
     loggers.append(lg.logger(imports.syn_filter, imports.syn, imports.syn_dir))
     for logger in loggers:

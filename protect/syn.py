@@ -16,8 +16,8 @@ def slave(ip_list:set, time:float):
     for ip in set(ip_list):
         if ip not in check:
             print(imports.syn_drop_filter%(imports.ip,ip))
-            #init = threading.Thread(target = sniff, kwargs={"prn" : drop_syn_init, "count" : 1, "filter" : imports.syn_drop_filter%(imports.ip,ip)}, daemon=True)
-            #init.run()
+            init = threading.Thread(target = sniff, kwargs={"prn" : drop_syn_init, "count" : 1, "filter" : imports.syn_drop_filter%(imports.ip,ip)}, daemon=True)
+            init.run()
             check[ip] = int(time)
     
     while True: pass
