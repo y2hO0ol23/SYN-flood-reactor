@@ -15,7 +15,6 @@ def slave(data: tuple, time:float):
     key = "%s %d"%(ip, sport)
 
     if key in check: return
-    print(ip)
 
     syn_ack = IP(src=imports.ip, dst=ip)/TCP(sport=dport, dport=sport, flags='SA', ack=seq+1)
     for _ in range(3):
