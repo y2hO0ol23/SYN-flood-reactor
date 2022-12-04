@@ -21,7 +21,8 @@ def slave(data: tuple, time:float):
         send(syn_ack)
     
     syn = IP(src=ip, dst=imports.ip)/TCP(sport=sport, dport=dport, flags='S', seq=seq)
-    if len(sr1(syn)) > 0:
+    pkt = sr1(syn, timeout=10)
+    if pkt != None:
         cmd = "defence_syn_flood 1 -s %s --sport %s -d %d --dport %s --protocol tcp --tcp-flags SYN,ACK,FIN,RST SYN -j ACCEPT"%(ip, sport, imports.ip, dport)
         os.system("iptables -I "+cmd)
         send(syn)
