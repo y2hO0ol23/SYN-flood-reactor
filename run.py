@@ -3,7 +3,7 @@ import protect.core
 import imports
 import os
 
-drop_all_syn = '-d %d --protocol tcp --tcp-flags SYN,RST,ACK,FIN SYN -j DROP'%imports.ip
+drop_all_syn = '-d %s --protocol tcp --tcp-flags SYN,RST,ACK,FIN SYN -j DROP'%imports.ip
 print(drop_all_syn)
 
 if __name__ == '__main__':  
