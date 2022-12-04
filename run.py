@@ -32,6 +32,9 @@ if __name__ == '__main__':
     main()
 
     try:
-        while True: pass
+        open('rmToStop','w')
+        while True:
+            if not os.path.isfile('rmToStop'):
+                break
     except KeyboardInterrupt:
         sys.exit()
