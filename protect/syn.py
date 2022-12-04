@@ -52,15 +52,15 @@ def queue_handler():
     global end, queue
 
     def retry(ip, sport, dport, syn):
-        cmd = "defence_syn_flood 1 -s %s --sport %s -d %d --dport %s --protocol tcp --tcp-flags SYN,ACK,FIN,RST SYN -j ACCEPT"%(ip, sport, imports.ip, dport)
-        os.system("iptables -I "+cmd)
-        sr1(syn, verbose=False)
-        os.system("iptables -D "+cmd)
+        cmd = "-s %s --sport %s -d %d --dport %s --protocol tcp --tcp-flags SYN,ACK,FIN,RST SYN -j ACCEPT"%(ip, sport, imports.ip, dport)
+        os.system("iptables -I INPUT 1 %s"%cmd)
+        sr1(syn, verbose=False, timeout=imports.timeout)
+        os.system("iptables -D INPUT %s"%cmd)
 
     while not end:
         if len(queue) > 0:
             ip, sport, dport, syn = queue[0]
-            thread = threading.Thread(target=retry, args=(ip, sport, dport, syn), deamon=True)
+            thread = threading.Thread(target=retry, args=(ip, sport, dport, syn))
             thread.start()
             print(ip)
 

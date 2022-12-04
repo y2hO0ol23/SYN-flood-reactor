@@ -3,16 +3,10 @@ import protect.core
 import imports
 import os
 
-def init():
-    os.system('iptables -N defence_syn_flood')
-    os.system('iptables -A defence_syn_flood -d ' + imports.ip + ' --protocol tcp --tcp-flags SYN,RST,ACK,FIN SYN -j DROP')
-
-def end():
-    os.system('iptables -F defence_syn_flood')
-    os.system('iptables -X defence_syn_flood')
+drop_all_syn = '-d %s --protocol tcp --tcp-flags SYN,RST,ACK,FIN SYN -j DROP'%imports.IP6Field
 
 if __name__ == '__main__':  
-    init()
+    os.system('iptables -I INPUT 1 %s'%drop_all_syn)
 
     loggers = []
     loggers.append(lg.logger(imports.syn_filter, imports.syn, imports.syn_dir))
@@ -29,6 +23,5 @@ if __name__ == '__main__':
             logger.stop()
         
         protect.core.stop()
-    
-    end()
+        os.system('iptables -D INPUT %s'%drop_all_syn)
 

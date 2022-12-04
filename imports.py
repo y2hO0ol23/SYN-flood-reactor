@@ -21,5 +21,3 @@ def syn(filename:str, packet:Packet)->None:
 
 syn_dir = 'syn'
 syn_filter = 'dst host %s and tcp[tcpflags] & (tcp-syn|tcp-ack|tcp-push) == tcp-syn'%ip
-
-syn_drop_filter = 'src host %s and dst host %s and tcp[tcpflags] & (tcp-syn|tcp-ack|tcp-push) == tcp-syn | tcp-ack'
