@@ -10,7 +10,7 @@ global end, check
 
 def timeout(key):
     sleep(imports.timeout)
-    check[key] = 3
+    check[key] = 2
 
 def handler(packet: Packet):
     global check
@@ -19,25 +19,23 @@ def handler(packet: Packet):
     key = "%s:%d seq=%d"%(ip, sport, seq)
     
     if key not in check: check[key] = 0
-    if check[key] == 0:
+    if not check[key]:
         check[key] = 1
-        print(ip, 'step1')
+        
         threading.Thread(target=timeout, args=(key, )).start()
-        while check[key] < 2: pass
+        while check[key] != 2: pass
+
+        cmd = "-s %s -d %s --protocol tcp --sport %d --dport %d --tcp-flags SYN,ACK,FIN,RST SYN -j ACCEPT"%(ip, imports.ip, sport, dport)
+
+        check[key] = 1
+        os.system("iptables -I INPUT 1 %s"%cmd)
         
-        if check[key] == 2:
-            print(ip, 'step2')
-            cmd = "-s %s -d %s --protocol tcp --sport %d --dport %d --tcp-flags SYN,ACK,FIN,RST SYN -j ACCEPT"%(ip, imports.ip, sport, dport)
+        threading.Thread(target=timeout, args=(key, )).start()
+        while check[key] != 2: pass
 
-            os.system("iptables -I INPUT 1 %s"%cmd)
-
-            sr1(IP(src=ip, dst=imports.ip)/TCP(seq=seq, sport=sport, dport=dport), timeout=imports.timeout)
-
-            os.system("iptables -D INPUT %s"%cmd)
-        
-        print(ip, 'end')
+        os.system("iptables -D INPUT %s"%cmd)
         check[key] = 0
-    elif check[key] == 1:
+    else:
         check[key] = 2
 
 
