@@ -11,7 +11,7 @@ global check
 def slave(data: tuple, time:float):
     global check
     ip, seq, sport, dport = data
-    key = ip+' %d'%sport
+    key = "%s %d"%(ip, sport)
 
     if key in check: return
     print(ip, seq, sport, dport)
@@ -22,7 +22,7 @@ def slave(data: tuple, time:float):
     
     syn = IP(src=ip, dst=imports.ip)/TCP(sport=sport, dport=dport, flags='S', seq=seq)
     if len(sr1(syn)) > 0:
-        cmd = "defence_syn_flood 1 -s %s --sport %d -d %s --dport %d --protocol tcp --tcp-flags SYN,ACK,FIN,RST SYN -j ACCEPT"%(ip, sport, imports.ip, dport)
+        cmd = "defence_syn_flood 1 -s %s --sport %s -d %d --dport %s --protocol tcp --tcp-flags SYN,ACK,FIN,RST SYN -j ACCEPT"%(ip, sport, imports.ip, dport)
         os.system("iptables -I "+cmd)
         send(syn)
         os.system("iptables -I "+cmd)
@@ -40,8 +40,8 @@ def master(time:float)->None:
     list1 = directory + tm.strftime('%Y-%m-%d_%I.%M.%S_%p.log', tm.localtime(time - 2 - imports.delay))
     list2 = directory + tm.strftime('%Y-%m-%d_%I.%M.%S_%p.log', tm.localtime(time - 1 - imports.delay))
     
-    list1 = utils.read(list1)
-    list2 = utils.read(list2)
+    list1 = utils.read(list1, str, int, int, int)
+    list2 = utils.read(list2, str, int, int, int)
 
     for data in list1 + list2:
         slaveT = threading.Thread(target = slave, args = (data, time), daemon=True)
