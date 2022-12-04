@@ -12,10 +12,8 @@ def handler(packet: Packet):
     ip, seq, sport, dport = packet[IP].src, packet[TCP].seq, packet[TCP].sport, packet[TCP].dport
     key = "%s %d %d"%(ip, sport, seq)
 
-    if key in check:
-        queue.append((ip, seq ,sport, dport))
-    
     check[key] = True
+    queue.append((ip, seq ,sport, dport))
 
 
 def queue_handler():
