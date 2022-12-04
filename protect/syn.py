@@ -7,7 +7,7 @@ import threading
 
 from scapy.layers.inet import IP, TCP
 
-global check
+global end, check
 
 def slave(data: tuple, time:float):
     global check
@@ -33,10 +33,10 @@ def slave(data: tuple, time:float):
     
     check[key] = False
 
-
-global end
 def master(time:float)->None:
-    global end
+    global end, check
+    end = False
+    check = dict()
 
     directory = './log/' + imports.syn_dir + '/'
     list1 = directory + tm.strftime('%Y-%m-%d_%I.%M.%S_%p.log', tm.localtime(time - 2 - imports.delay))
@@ -50,15 +50,6 @@ def master(time:float)->None:
         slaveT = threading.Thread(target = slave, args = (data, time), daemon=True)
         slaveT.run()
         print('slave_end',end=' ')
-    
-    while not end: pass
-
-def run(time:float)->threading.Thread:
-    global end, check
-    end = False
-    check = dict()
-    masterT = threading.Thread(target=master, args=(time, ))
-    masterT.run()
 
 def stop():
     global end

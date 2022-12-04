@@ -16,7 +16,7 @@ def start()->None:
     if next_time == int(time) - imports.delay:
         next_time += 1
         print(time, end=' ')
-        protect.syn.run(time)
+        protect.syn.master(time)
         print('end')
 
         while len(protect.syn.queue) > 0:
