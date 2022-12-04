@@ -19,7 +19,9 @@ def handler(packet: Packet):
         key[check] = True
         os.system("iptables -I INPUT 1 %s"%cmd)
         
-        sniff(count=1, filter='src host %s and dst host %s and tcp[tcpflags] & (tcp-syn|tcp-ack|tcp-push) == tcp-syn and tcp.sport == %d and tcp.dport == %d and tcp.seq == %d'%(ip, imports.ip, sport, dport, seq))
+        sniff(count=1, timeout=imports.timeout,
+            filter='src host %s and dst host %s and tcp[tcpflags] & (tcp-syn|tcp-ack|tcp-push) == tcp-syn and '%(ip, imports.ip) + \
+                   'tcp.sport == %d and tcp.dport == %d and tcp.seq == %d'%(sport, dport, seq))
 
         os.system("iptables -D INPUT %s"%cmd)
         key[check] = False
