@@ -51,7 +51,7 @@ def queue_handler():
     global end, queue
 
     def retry(ip, sport, dport, syn):
-        cmd = "-s %s --sport %s -d %d --dport %s --protocol tcp --tcp-flags SYN,ACK,FIN,RST SYN -j ACCEPT"%(ip, sport, imports.ip, dport)
+        cmd = "-s %s --sport %d -d %s --dport %d --protocol tcp --tcp-flags SYN,ACK,FIN,RST SYN -j ACCEPT"%(ip, sport, imports.ip, dport)
         os.system("iptables -I INPUT 1 %s"%cmd)
         sr1(syn, verbose=False, timeout=imports.timeout)
         os.system("iptables -D INPUT %s"%cmd)
