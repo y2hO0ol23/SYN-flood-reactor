@@ -10,10 +10,9 @@ def syn(filename:str, packet:Packet)->None:
     while True:
         try:
             fd = open(filename, 'a+')
-            fd.write(packet[IP].src     + ' ')
-            fd.write(packet[TCP].seq    + ' ')
-            fd.write(packet[TCP].sport  + ' ')
-            fd.write(packet[TCP].dport  + '\n')
+            data = "%s %d %d %d\n" \
+                    %(packet[IP].src, packet[TCP].seq, packet[TCP].sport, packet[TCP].dport)
+            fd.write(data)
             fd.close()
             break
         except:
