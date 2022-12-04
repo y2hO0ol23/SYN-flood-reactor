@@ -9,13 +9,12 @@ global end
 
 def handler(packet: Packet):
     ip, seq, sport, dport = packet[IP].src, packet[TCP].seq, packet[TCP].sport, packet[TCP].dport
-
     cmd = "-s %s -d %s --protocol tcp --sport %d --dport %d --tcp-flags SYN,ACK,FIN,RST SYN -j ACCEPT"%(ip, imports.ip, sport, dport)
+
     os.system("iptables -I INPUT 1 %s"%cmd)
     
-    syn = IP(src=ip, dst=imports.ip)/TCP(sport=sport, dport=dport, flags='S', seq=seq)
-    sr1(syn, verbose=False, timeout=imports.timeout)
-    
+    sniff(count=1, filter='src host %s and dst host %s and tcp[tcpflags] & (tcp-syn|tcp-ack|tcp-push) == tcp-syn and tcp.sport == %d and tcp.dport == %d and tcp.seq == %d'%(ip, imports.ip, sport, dport, seq))
+
     os.system("iptables -D INPUT %s"%cmd)
 
 
