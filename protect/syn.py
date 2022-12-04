@@ -18,11 +18,13 @@ class timeout_chk():
     def __init__(self):
         self.end = False
 
-handler = lambda pkt: threading.Thread(target=run, args=(pkt, ))
-def run(packet: Packet):
+def handler(packet: Packet):
+    ip, seq, sport, dport = packet[IP].src, packet[TCP].seq, packet[TCP].sport, packet[TCP].dport
+    threading.Thread(target=run, args=(ip, seq, sport, dport))
+
+def run(ip:str, seq:int, sport:int, dport:int):
     global check
 
-    ip, seq, sport, dport = packet[IP].src, packet[TCP].seq, packet[TCP].sport, packet[TCP].dport
     key = "%s:%d seq=%d"%(ip, sport, seq)
     
     if key not in check: check[key] = 0
