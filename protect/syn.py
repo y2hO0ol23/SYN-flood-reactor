@@ -41,9 +41,8 @@ def run(ip:str, seq:int, sport:int, dport:int):
 
             os.system("iptables -I INPUT 1 %s"%cmd)
             
-            send(IP(src=ip, dst=imports.ip)/TCP(seq=seq, sport=sport, dport=dport))
+            sr1(IP(src=ip, dst=imports.ip)/TCP(seq=seq, sport=sport, dport=dport))
 
-            sleep(0.5)
             os.system("iptables -D INPUT %s"%cmd)
 
         check[key] = 0
