@@ -46,9 +46,6 @@ def run(ip:str, seq:int, sport:int, dport:int):
             os.system("iptables -D INPUT %s"%cmd)
 
         check[key] = 0
-    else:
-        print(key)
-        check[key] = 2
 
 
 def init()->None:
