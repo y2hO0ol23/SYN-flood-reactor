@@ -17,9 +17,9 @@ def main():
     protect.syn.init()
     atexit.register(protect.syn.stop)
 
-    threads = tuple(
-        threading.Thread(target = sniff, kwargs={"prn" : protect.syn.handler, "count" : 0, "filter" : protect.syn.filter}, daemon=True)
-    )
+    threads = [
+        threading.Thread(target=sniff, kwargs={"prn" : protect.syn.handler, "count" : 0, "filter" : protect.syn.filter}, daemon=True)
+    ]
 
     for thread in threads:
         thread.start()
