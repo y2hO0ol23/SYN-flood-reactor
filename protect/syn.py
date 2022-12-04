@@ -20,6 +20,8 @@ def handler(packet: Packet):
     
     if key not in check: check[key] = 0
     if not check[key]:
+        check[key] = 1
+        
         threading.Thread(target=timeout, args=(key, )).start()
         while check[key] < 2: pass
         
@@ -31,7 +33,7 @@ def handler(packet: Packet):
             sr1(IP(src=ip, dst=imports.ip)/TCP(seq=seq, sport=sport, dport=dport), timeout=imports.timeout)
 
             os.system("iptables -D INPUT %s"%cmd)
-            
+
         check[key] = 0
     else:
         check[key] = 2
