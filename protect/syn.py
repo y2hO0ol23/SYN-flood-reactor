@@ -8,9 +8,15 @@ from scapy.layers.inet import IP, TCP
 
 global end, check
 
-def timeout(key):
+def timeout(key, chk):
+    global check
     sleep(imports.timeout)
-    check[key] = 2
+    if not chk.end:
+        check[key] = 3
+
+class timeout_chk():
+    def __init__(self):
+        self.end = False
 
 def handler(packet: Packet):
     global check
@@ -22,20 +28,24 @@ def handler(packet: Packet):
     if not check[key]:
         check[key] = 1
         
-        threading.Thread(target=timeout, args=(key, )).start()
+        chk = timeout_chk()
+        threading.Thread(target=timeout, args=(key, chk)).start()
         while check[key] != 2: pass
+        chk.end = True
 
-        cmd = "-s %s -d %s --protocol tcp --sport %d --dport %d --tcp-flags SYN,ACK,FIN,RST SYN -j ACCEPT"%(ip, imports.ip, sport, dport)
+        if check[key] == 2:
+            cmd = "-s %s -d %s --protocol tcp --sport %d --dport %d --tcp-flags SYN,ACK,FIN,RST SYN -j ACCEPT"%(ip, imports.ip, sport, dport)
 
-        check[key] = 1
-        os.system("iptables -I INPUT 1 %s"%cmd)
-        
-        threading.Thread(target=timeout, args=(key, )).start()
-        while check[key] != 2: pass
+            os.system("iptables -I INPUT 1 %s"%cmd)
+            
+            send(IP(src=ip, dst=imports.ip)/TCP(seq=seq, sport=sport, dport=dport))
 
-        os.system("iptables -D INPUT %s"%cmd)
+            sleep(0.5)
+            os.system("iptables -D INPUT %s"%cmd)
+
         check[key] = 0
     else:
+        print(key)
         check[key] = 2
 
 
