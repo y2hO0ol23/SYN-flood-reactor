@@ -1,19 +1,37 @@
-import logger as lg
-import protect.core
+import os, atexit, threading
+from scapy.all import *
+
 import imports
-import os
+from protect.all import *
 
 drop_all_syn = '-d %s --protocol tcp --tcp-flags SYN,RST,ACK,FIN SYN -j DROP'%imports.ip
 
-if __name__ == '__main__':  
+def add_chain():
     os.system('iptables -I INPUT 1 %s'%drop_all_syn)
 
-    loggers = []
-    loggers.append(lg.logger(imports.syn_filter, imports.syn, imports.syn_dir))
-    for logger in loggers:
-        logger.run()
+def remove_chain():
+    os.system('iptables -D INPUT %s'%drop_all_syn)
 
-    protect.core.init()
 
-    while True:
-        protect.core.start()
+def main():
+    protect.syn.init()
+    atexit.register(protect.syn.stop)
+
+    threads = (
+        threading.Thread(target = sniff, kwargs={"prn" : protect.syn.handler, "count" : 0, "filter" : protect.syn.filter}, daemon=True)
+    )
+
+    for thread in threads:
+        thread.start()
+
+
+if __name__ == '__main__':  
+    add_chain()
+    atexit.register(remove_chain)
+
+    main()
+
+    try:
+        while True: pass
+    except KeyboardInterrupt:
+        sys.exit()
