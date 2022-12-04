@@ -39,22 +39,31 @@ def master(time:float)->None:
     list1 = utils.read(list1, str, int, int, int)
     list2 = utils.read(list2, str, int, int, int)
 
+    threads = []
     for data in list1 + list2:
-        slaveT = threading.Thread(target = slave, args = (data, time), daemon=True)
-        slaveT.start()
+        threads.append(threading.Thread(target = slave, args = (data, time), daemon=True))
+    
+    for thread in threads:
+        thread.start()
     
     while not end: pass
 
 def queue_handler():
     global end, queue
 
+    def retry(ip, sport, dport, syn):
+        cmd = "defence_syn_flood 1 -s %s --sport %s -d %d --dport %s --protocol tcp --tcp-flags SYN,ACK,FIN,RST SYN -j ACCEPT"%(ip, sport, imports.ip, dport)
+        os.system("iptables -I "+cmd)
+        sr1(syn, verbose=False)
+        os.system("iptables -D "+cmd)
+
+
     while not end:
         if len(queue) > 0:
-            ip, sport, dport, syn = queue
-            cmd = "defence_syn_flood 1 -s %s --sport %s -d %d --dport %s --protocol tcp --tcp-flags SYN,ACK,FIN,RST SYN -j ACCEPT"%(ip, sport, imports.ip, dport)
-            os.system("iptables -I "+cmd)
-            sr1(syn, verbose=False)
-            os.system("iptables -D "+cmd)
+            ip, sport, dport, syn = queue[0]
+            thread = threading.Thread(target=retry, args=(ip, sport, dport, syn), deamon=True)
+            thread.start()
+            print(ip)
 
         queue = queue[1:]
 
