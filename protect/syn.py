@@ -2,25 +2,27 @@ from scapy.all import *
 import utils as utils
 import time as tm
 import imports
+import os
 
-def drop_syn_init(packet:Packet)->None:
-    print(packet.seq)
+from scapy.layers.inet import IP, TCP
 
-
-def drop_syn(packet:Packet)->None:
-    pass
-
-def slave(ip_list:set, time:float):
-    global check
-
-    for ip in set(ip_list):
-        if ip not in check:
-            print(ip)
-            #init = threading.Thread(target = sniff, kwargs={"prn" : drop_syn_init, "count" : 1, "filter" : imports.syn_drop_filter%(imports.ip,ip)}, daemon=True)
-            #init.run()
-            check[ip] = int(time)
+def slave(data: tuple, time:float):
+    ip, seq, sport, dport = data
+    print(ip, seq, sport, dport)
     
-    while True: pass
+    syn_ack = IP(src=imports.ip, dst=ip)/TCP(sport=dport, dport=sport, flags='SA', ack=seq+1)
+    for _ in range(3):
+        send(syn_ack)
+    
+    syn = IP(src=ip, dst=imports.ip)/TCP(sport=sport, dport=dport, flags='S', seq=seq)
+    sr1(syn)
+    cmd = "iptables -I defence_syn_flood 1 -s " + ip + " -d " + imports.ip + " --protocol tcp --tcp-flags SYN,ACK,FIN,RST SYN -j ACCEPT"
+    os.system(cmd)
+    imports.queue.append([ip, cmd, time + 60])
+    send(syn)
+
+    print(ip,'=> accept')
+
 
 global end, check
 def master(time:float)->None:
@@ -33,8 +35,9 @@ def master(time:float)->None:
     list1 = utils.read(list1)
     list2 = utils.read(list2)
 
-    slaveT = threading.Thread(target = slave, args = (set(list1 + list2), time), daemon=True)
-    slaveT.run()
+    for data in set(list1 + list2):
+        slaveT = threading.Thread(target = slave, args = (data, time), daemon=True)
+        slaveT.run()
     
     while not end: pass
 
