@@ -15,9 +15,7 @@ def start()->None:
     time = tm.time()
     if next_time == int(time) - imports.delay:
         next_time += 1
-        print(time, end=' ')
-        protect.syn.master(time)
-        print('end')
+        protect.syn.run(time)
 
         while len(protect.syn.queue) > 0:
             ip, cmd, rmtime = protect.syn.queue[0]
