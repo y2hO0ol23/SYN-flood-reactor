@@ -17,12 +17,10 @@ def slave(data: tuple, time:float):
     if key in check: return
 
     syn_ack = IP(src=imports.ip, dst=ip)/TCP(sport=dport, dport=sport, flags='SA', ack=seq+1)
-    for _ in range(3):
-        send(syn_ack, verbose=False)
+    pkt = sr1(syn_ack, timeout=imports.timeout, verbose=False)
     
-    syn = IP(src=ip, dst=imports.ip)/TCP(sport=sport, dport=dport, flags='S', seq=seq)
-    pkt = sr1(syn, timeout=imports.timeout, verbose=False)
     if pkt != None:
+        syn = IP(src=ip, dst=imports.ip)/TCP(sport=sport, dport=dport, flags='S', seq=seq)
         queue.append((ip, sport, dport, syn))
     
     check[key] = False
