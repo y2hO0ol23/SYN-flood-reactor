@@ -2,10 +2,15 @@ from scapy.all import *
 import imports
 import os
 import threading
+from time import *
 
 from scapy.layers.inet import IP, TCP
 
 global end, check
+
+def timeout(key):
+    time.sleep(imports.timeout)
+    check[key] = 2
 
 def handler(packet: Packet):
     global check
@@ -17,13 +22,14 @@ def handler(packet: Packet):
     if not check[key]:
         cmd = "-s %s -d %s --protocol tcp --sport %d --dport %d --tcp-flags SYN,ACK,FIN,RST SYN -j ACCEPT"%(ip, imports.ip, sport, dport)
 
-        key[check] = 1
+        check[key] = 1
         os.system("iptables -I INPUT 1 %s"%cmd)
         
-        while key[check] != 2: pass
+        threading.Thread(target=timeout, args=(key, )).start()
+        while check[key] != 2: pass
 
         os.system("iptables -D INPUT %s"%cmd)
-        key[check] = 0
+        check[key] = 0
     else:
         check[key] = 2
 
