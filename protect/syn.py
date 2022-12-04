@@ -33,7 +33,7 @@ def master(time:float)->None:
     list1 = utils.read(list1)
     list2 = utils.read(list2)
 
-    slaveT = threading.Thread(target = slave, args = (set(list1 + list2), ), daemon=True)
+    slaveT = threading.Thread(target = slave, args = (set(list1 + list2), time), daemon=True)
     slaveT.run()
     
     while not end: pass
