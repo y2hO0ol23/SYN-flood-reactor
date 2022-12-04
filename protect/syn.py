@@ -46,12 +46,14 @@ def master(time:float)->None:
     list2 = utils.read(list2, str, int, int, int)
 
     for data in list1 + list2:
+        print('slave',end=' ')
         slaveT = threading.Thread(target = slave, args = (data, time), daemon=True)
         slaveT.run()
+        print('slave_end',end=' ')
     
     while not end: pass
 
-def run(time:float)->tuple:
+def run(time:float)->threading.Thread:
     global end, check
     end = False
     check = dict()
