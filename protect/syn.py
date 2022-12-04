@@ -20,7 +20,7 @@ class timeout_chk():
 
 def handler(packet: Packet):
     ip, seq, sport, dport = packet[IP].src, packet[TCP].seq, packet[TCP].sport, packet[TCP].dport
-    threading.Thread(target=run, args=(ip, seq, sport, dport))
+    threading.Thread(target=run, args=(ip, seq, sport, dport)).start()
 
 def run(ip:str, seq:int, sport:int, dport:int):
     global check
