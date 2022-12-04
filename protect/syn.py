@@ -2,14 +2,14 @@ from scapy.all import *
 import imports
 import os
 import threading
-from time import *
+from time import sleep
 
 from scapy.layers.inet import IP, TCP
 
 global end, check
 
 def timeout(key):
-    time.sleep(imports.timeout)
+    sleep(imports.timeout)
     check[key] = 2
 
 def handler(packet: Packet):
