@@ -21,11 +21,12 @@ def handler(packet: Packet):
     if key not in check: check[key] = 0
     if check[key] == 0:
         check[key] = 1
-
+        print(ip, 'step1')
         threading.Thread(target=timeout, args=(key, )).start()
         while check[key] < 2: pass
         
         if check[key] == 2:
+            print(ip, 'step2')
             cmd = "-s %s -d %s --protocol tcp --sport %d --dport %d --tcp-flags SYN,ACK,FIN,RST SYN -j ACCEPT"%(ip, imports.ip, sport, dport)
 
             os.system("iptables -I INPUT 1 %s"%cmd)
@@ -33,7 +34,8 @@ def handler(packet: Packet):
             sr1(IP(src=ip, dst=imports.ip)/TCP(seq=seq, sport=sport, dport=dport), timeout=imports.timeout)
 
             os.system("iptables -D INPUT %s"%cmd)
-
+        
+        print(ip, 'end')
         check[key] = 0
     elif check[key] == 1:
         check[key] = 2
