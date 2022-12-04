@@ -1,5 +1,4 @@
 from scapy.all import *
-import utils as utils
 import time as tm
 import imports
 import os
@@ -18,10 +17,10 @@ def slave(data: tuple, time:float):
 
     syn_ack = IP(src=imports.ip, dst=ip)/TCP(sport=dport, dport=sport, flags='SA', ack=seq+1)
     for _ in range(3):
-        send(syn_ack, iface=False)
+        send(syn_ack, verbose=False)
     
     syn = IP(src=ip, dst=imports.ip)/TCP(sport=sport, dport=dport, flags='S', seq=seq)
-    pkt = sr1(syn, timeout=imports.timeout, iface=False)
+    pkt = sr1(syn, timeout=imports.timeout, verbose=False)
     if pkt != None:
         cmd = "defence_syn_flood 1 -s %s --sport %s -d %d --dport %s --protocol tcp --tcp-flags SYN,ACK,FIN,RST SYN -j ACCEPT"%(ip, sport, imports.ip, dport)
         os.system("iptables -I "+cmd)

@@ -21,8 +21,6 @@ if __name__ == '__main__':
 
     protect.core.init()
 
-    while True:
-        protect.core.start()
     try:
         while True:
             protect.core.start()
